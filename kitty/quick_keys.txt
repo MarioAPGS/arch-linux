@@ -1,0 +1,3 @@
+ctrl+shift+T => crete new terminal kitty tab
+ctrl+shit+alt+T => rename kitty tab
+ctrl+shit+W => close tab

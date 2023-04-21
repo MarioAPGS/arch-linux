@@ -28,7 +28,7 @@ gears.timer {
 ---======================---
 -- format: {<usage in Gb>, <percentage of use>}| ex: {3.1, 19}
 
-local ram = [[ echo $(printf "%0.1f" $(free | grep Mem | awk '{print $3 / 10^6}'))"|"$(printf "%0.0f" $(free | grep Mem | awk '{print $3/$2 * 100.0}')) ]]
+local ram = [[ LC_NUMERIC=C;echo $(printf "%0.1f" $(free | grep Mem | awk '{print $3 / 10^6}'))"|"$(printf "%0.0f" $(free | grep Mem | awk '{print $3/$2 * 100.0}')) ]]
 
 gears.timer {
     timeout = 2,
@@ -93,6 +93,23 @@ gears.timer {
         awful.spawn.easy_async_with_shell(batery, function (used)
             local segments = helpers.split(used, "|")
             awesome.emit_signal('resource::bat', segments)
+            --naughty.notify({ preset = naughty.config.presets.info, title = "Log", text = helpers.trim(used) })
+        end)
+    end
+}
+
+---======================---
+--|         Disk         |--
+---======================---
+local disk = "df | grep -i /dev/nvm | awk '{print $6\"|\"$3*10^-6\"|\"$2*10^-6}' | xargs"
+gears.timer {
+    timeout = 10,
+    call_now = true,
+    autostart = true,
+    callback = function ()
+        awful.spawn.easy_async_with_shell(disk, function (used)
+            local segments = helpers.split(used, " ")
+            awesome.emit_signal('resource::disk', segments)
             --naughty.notify({ preset = naughty.config.presets.info, title = "Log", text = helpers.trim(used) })
         end)
     end

@@ -2,6 +2,10 @@
 
 I have started to learn linux and use it as main OS, im using the distribution Arch linux because is one of the minimalist distribution of linux, you have to install it manually OS it is perfect to learn the base and start building from there.
 
+# arch-linux
+
+I have started to learn linux and use it as main OS, im using the distribution Arch linux because is one of the minimalist distribution of linux, you have to install it manually OS it is perfect to learn the base and start building from there.
+
 For the instalation follow the official guide (it is really good documented and easy to follow)
 
 [Instalation guide](https://wiki.archlinux.org/title/installation_guide)
@@ -28,7 +32,7 @@ When you are in the partition configuration, you should remove the UEFI boot par
 
 you should see something like this
 
-![win partition](./documentation/images/win_partitions.png)
+![win partition](./images/win_partitions.png)
 
 ---
 ## 2. You have windows | you will install Arch
@@ -74,13 +78,21 @@ Follow the oficial guideline [here](https://wiki.archlinux.org/title/installatio
 | User files     |   /home    | `mount --mkdir /dev/<user_part.> /mnt/home` |
 | EFI System     |   /boot    | `mount --mkdir /dev/<boot_part.> /mnt/boot`     |
 
-* Install Arch linux, the next command will install the base of Arch linux on the /mnt directory - `pacstrap -K /mnt base linux linux-firmware nano`
+* Install Arch linux, the next command will install the base of Arch linux on the /mnt directory - `pacstrap -K /mnt base linux linux-firmware ntfs-3g networkmanager sudo git nano`
 
 * Create partition table - `genfstab -U /mnt >> /mnt/etc/fstab`
 
 * Login into Arch OS - `arch-chroot /mnt`
 
 * Change root password - `passwd`
+
+* Create new user and create default home folder - `useradd -m <user_name>`
+
+* Asign the new user a password - `passwd <user_name>`
+
+* Add the new user to the sudo group - `echo <your_user> ALL=(ALL:ALL) ALL >> /etc/sudoers`
+
+* Activate internet - `systemctl enable MetworkManager`
 
 * Configure Time zone, Location, hostname (follow the oficial guide )
 
@@ -99,13 +111,13 @@ You should do the next steps using the USB booted because your bios won't recogn
 
 Note: if you reboot before install GRUB (the boot loader) your computer won't recognice the new Arch OS yet. So start linux from the USB boot installer and - `arch-chroot /mnt`
 
-* install grub packages - `pacman -S grub os-prober`
+* install grub packages - `pacman -S grub os-prober efibootmgr`
 * open `/etc/default/grub` and remove # in the line `GRUB_DISABLE_OS_PROBER=false`
 
 **NOTE**: you need to be sure that the Linux image is available, you can check it going to the UEFI partition and verifying if exist this two files `initramfs-linux-fallback.img initramfs-linux.img`.
 
 **How to fix it:**
-[Linux images not found or do not exist](./Fixed.md#linux-images-not-found-or-do-not-exist)
+[Linux images not found or do not exist](./Instalation-fixes.md#linux-images-not-found-or-do-not-exist)
 
 * install arch boot loader in the existing UEFI partition - `grub-install --target=x86_64-efi --efi-directory=boot --bootloader-id=GRUB`
 * Configure GRUB - `grub-mkconfig -o /boot/grub/grub.cfg`
@@ -114,24 +126,8 @@ Note: if you reboot before install GRUB (the boot loader) your computer won't re
 * Enter in bios and change the boot order making GRUB as main boot loader
 * enter in the Arch OS and repeat the grub configuration command, now should detect windows boot - `grub-mkconfig -o /boot/grub/grub.cfg`
 
----
+Both systems are ready to be booted by GRUB (linux & windows), at this moment the are a lot of configurations to complete: audio, wifi, bluetooth, desktop...
 
-## Some user packages
-pacman -S sudo git
-
-
-## Console
-
-I am using the **kitty** console with **zsh** as shell.
-
-### - Dependencies
-* **kitty**: sudo pacaman -S kitty
-* **zsh**: sudo pacman -S zsh
-### - Configuration 
-
-
-## Desktop
-## Audio
-## Wifi
-
-
+--- 
+* ## [Graphic ui](./documentation/GUI.md)
+* ## [Audio](./documentation/Audio.md)

@@ -19,7 +19,7 @@
 * Define power button and turn on password protection
 * Unmark the checkbox Turn on fast startup
 
-![quick start windows](./documentation/images/quick_start_windows.png)
+![quick start windows](./images/quick_start_windows.png)
 
 ---
 
