@@ -1,6 +1,6 @@
 # arch-linux
 
-I have started to learn linux and use it as main SO, im using the distribution Arch linux because is one of the minimalist distribution of linux, you have to install it manually so it is perfect to learn the base and start building from there.
+I have started to learn linux and use it as main OS, im using the distribution Arch linux because is one of the minimalist distribution of linux, you have to install it manually OS it is perfect to learn the base and start building from there.
 
 For the instalation follow the official guide (it is really good documented and easy to follow)
 
@@ -10,38 +10,109 @@ For the instalation follow the official guide (it is really good documented and 
 
 Instalation ways to dual boot windows & linux (Arch)
 
-1. You will install both SO for first time.
+1. You will install both OS for first time.
 2. You have windows | you will install Arch.
 3. You have Arch | you will install windows.
 
 In case you are in the 1º scenario, i suggent install windows first (it will remove some problems later regarding the GRUB)
 
-**1. Install windows** 
+## 1. You will install both OS for first time
+Start installing Windows 
 
-The most importart part here is change the size of the UEFI boot partition (by default is 100M and in not enought to do dual boot)
+The most importart part here is change the size of the UEFI boot partition (by default is 100M and it is not enought to do dual boot)
 
-When you are in the partition configuration, you should remove the UEFI boot partition and create a new one with more space (300M or 500M is enought).
+When you are in the partition configuration, you should remove the UEFI boot partition and create a new one with more space (**300M or 500M** is enought).
 
 **How to do it:**
-* Remove the partition with label = System (it is 100M size)
-* Open console (Press Shift + F10)
-* Open partition program (Type ```diskpart.exe```)
-* List disks (Type ```list disk```  )
-* Select disk (Type ```select disk n``` where ```n``` is the disk where you will create the partition)
-* Create efi partition (Type ```create partition efi size=550M```)
-* Format the new partition (Type ```format quick fs=fat32 label=System```) 
-* close the program (Type ```exit```)
-* Click on the refresh button
+[Change the UEFI partition during the instalation of Windows](./Fixed.md##change-the-uefi-partition-during-the-instalation-of-windows)
 
 you should see something like this
+
 ![win partition](./documentation/images/win_partitions.png)
 
 ---
 ## 2. You have windows | you will install Arch
 
-**IMPORTANT:** you must disable the quick start option
+**IMPORTANT:** you must disable the quick start option.
+**How to do it:**
+[Disable quick start in windows](./Fixed.md#disable-quick-start-in-windows)
 
-Go to energy options > Define on/off button > Unable Quick start (recomended) 
+**Instal archlinux**
+
+Follow the oficial guideline [here](https://wiki.archlinux.org/title/installation_guide) to install it
+
+**Summary:**
+
+* Change keyboard map - `loadkeys es`
+
+* Create the partitions
+* check your disk and partitions - `lsblk`
+* cfdisk is a console partition manager - `cfdisk /dev/<disk_name>`
+* Create partitions
+
+| Type              |      Purpose      |           Size | Notes      |  mount |
+|:------------------|:-----------------:|---------------:|:-----------|:-------|
+| EFI System        |    boot loader    | more than 300M | If windows is already installed, DONT create it, we will use the existing one | /boot |
+| Linux filesystem  |    linux files    | 10G is enought |            | /      |
+| Linux filesystem  |    user files     | 10G is enought | optional   | /home  |
+| Linux SWAP        |  use as extra memory if RAM is full  | as you want, but 2G is good | optional   | SWAP  |
+
+* Format the partitions (execute the commands in the *Format* column)
+
+| Partition      |  Formant command  | Notes      |
+|:---------------|:-----------------:|:-----------|
+| EFI System     | `mkfs.fat -F 32 /dev/<boot_partition>`  | **DO NOT FORMAT IT IF YOU HAVE WINDOWS!!** it was formated during the windows instalation |
+| Linux files    | `mkfs.ext4 /dev/<linux_partition>` |             |
+| User files     | `mkfs.ext4 /dev/<linux_partition>` |             |
+| SWAP           | `mkswap /dev/<swap_partition>` <br></br> `swapon /dev/<swap_partition>`  | Formant and activate as a swap partiton  |
+
+* Mount every partitions
+
+| Partition      |  mount in  | mount command                               |
+|:---------------|:----------:|:--------------------------------------------|
+| Linux files    |   /        | `mount --mkdir /dev/<boot_part.> /mnt`      |
+| User files     |   /home    | `mount --mkdir /dev/<user_part.> /mnt/home` |
+| EFI System     |   /boot    | `mount --mkdir /dev/<boot_part.> /mnt/boot`     |
+
+* Install Arch linux, the next command will install the base of Arch linux on the /mnt directory - `pacstrap -K /mnt base linux linux-firmware nano`
+
+* Create partition table - `genfstab -U /mnt >> /mnt/etc/fstab`
+
+* Login into Arch OS - `arch-chroot /mnt`
+
+* Change root password - `passwd`
+
+* Configure Time zone, Location, hostname (follow the oficial guide )
+
+* Configure boot loader [GRUB instalation guide](https://wiki.archlinux.org/title/GRUB)
+
+
+**IMPORTANT: Take into account during GRUB instalation**
+* 100M is not enought to install dual boot
+* Quick start of windows must be disabled
+* Arch should be in UEFI
+* the os-prober (which recogine other distros and OS) only works correctly if you are running the arch without the booted usb
+
+**Summary GRUB instalation**
+
+You should do the next steps using the USB booted because your bios won't recognice the new arch OS.
+
+Note: if you reboot before install GRUB (the boot loader) your computer won't recognice the new Arch OS yet. So start linux from the USB boot installer and - `arch-chroot /mnt`
+
+* install grub packages - `pacman -S grub os-prober`
+* open `/etc/default/grub` and remove # in the line `GRUB_DISABLE_OS_PROBER=false`
+
+**NOTE**: you need to be sure that the Linux image is available, you can check it going to the UEFI partition and verifying if exist this two files `initramfs-linux-fallback.img initramfs-linux.img`.
+
+**How to fix it:**
+[Linux images not found or do not exist](./Fixed.md#linux-images-not-found-or-do-not-exist)
+
+* install arch boot loader in the existing UEFI partition - `grub-install --target=x86_64-efi --efi-directory=boot --bootloader-id=GRUB`
+* Configure GRUB - `grub-mkconfig -o /boot/grub/grub.cfg`
+* Exit from your Arch OS - `exit`
+* Unplug the USB boot installer and reboot - `reboot now`
+* Enter in bios and change the boot order making GRUB as main boot loader
+* enter in the Arch OS and repeat the grub configuration command, now should detect windows boot - `grub-mkconfig -o /boot/grub/grub.cfg`
 
 ---
 
@@ -60,14 +131,6 @@ I am using the **kitty** console with **zsh** as shell.
 
 
 ## Desktop
-
-### - Dependencies
-| Library   |      Purpose      |  Cool |
-|-----------|:-----------------:|------:|
-| awesome   |     create        | $1600 |
-| col 2 is  |    centered       |   $12 |
-| col 3 is  | right-aligned     |    $1 |
-
 ## Audio
 ## Wifi
 
