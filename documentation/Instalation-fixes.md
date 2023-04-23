@@ -7,6 +7,8 @@
 * List disks - `list disk`
 * Select disk - `select disk n` where `n` is the disk where you will create the partition
 * Create efi partition - `create partition efi size=550M`
+* List all partitions in disk - `list partition`
+* Select the new partition - `select partition <partition_number>`
 * Format the new partition - `format quick fs=fat32 label=System`
 * close the program - `exit`
 * Click on the refresh button
