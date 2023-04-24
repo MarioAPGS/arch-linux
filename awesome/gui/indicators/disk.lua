@@ -30,7 +30,7 @@ awesome.connect_signal('resource::disk', function(usage)
     local sg1 = helpers.split(usage[1], "|")
     disk1:get_children_by_id('chart')[1].value = sg1[2] / 100
     disk1:get_children_by_id('chart_end')[1].markup = ' '..string.format("%0.1fG", sg1[2]).." "..string.format("%0.0f", sg1[3])
-    disk1:get_children_by_id('chart_init')[1].markup = zhelpers.trim(sg1[1])..'linux'
+    disk1:get_children_by_id('chart_init')[1].markup = helpers.trim(sg1[1])..'linux'
 
     local sg2 = helpers.split(usage[3], "|")
     disk2:get_children_by_id('chart')[1].value = sg2[2] / 100
