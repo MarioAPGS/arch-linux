@@ -57,8 +57,10 @@ go to the [oficial repository](https://github.com/awesomeWM/awesome) and follow 
 
 **Summary to install in arch**
 ```bash
+cd /opt
 sudo pacman -S --needed base-devel
-git clone https://aur.archlinux.org/awesome-git.git
+sudo git clone https://aur.archlinux.org/awesome-git.git
+sudo chown -R <your_user>:<your_user> awesome-git 
 cd awesome-git
 makepkg -fsri
 ```
