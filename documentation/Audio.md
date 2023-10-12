@@ -39,3 +39,5 @@ sudo grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
 Reboot
+
+-- if you use opera, please install it = `sudo pacman -S opera-ffmpeg-codecs`
