@@ -82,6 +82,7 @@ Follow the oficial guideline [here](https://wiki.archlinux.org/title/installatio
 
 * Create partition table - `genfstab -U /mnt >> /mnt/etc/fstab`
 
+* (pacman -Sy archlinux-keyring && pacman -Syyu)
 * Login into Arch OS - `arch-chroot /mnt`
 
 * Change root password - `passwd`
