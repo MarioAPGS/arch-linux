@@ -32,7 +32,7 @@ When you are in the partition configuration, you should remove the UEFI boot par
 
 you should see something like this
 
-![win partition](./images/win_partitions.png)
+![win partition](./documentation/images/win_partitions.png)
 
 ---
 ## 2. You have windows | you will install Arch
